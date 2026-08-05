@@ -38,8 +38,13 @@
 
 diacritics := false
 #Hotif diacritics
-    :*:aa::ä
-    :*:oo::ö
-    :*:uu::ü
-    :*:dz::đ
+    :?*:aa::ā
+    :?*:ee::ē
+    :?*:ii::ī
+    :?*:oo::ō
+    :?*:uu::ū
+    :?*:ae::ä
+    :?*:oe::ö
+    :?*:ue::ü
+    :?*:dz::đ
 #Hotif
