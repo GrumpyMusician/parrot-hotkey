@@ -6,19 +6,12 @@
 /*
     Powertoys -----------------------------------------------------------
 */
-#+a::#^t ; Toggle always on top
+#+BackSpace::#^t ; Toggle always on top
+#+-::#^- ; Increase Opacity
+#+=::#^= ; Decrease Opacity
 ;        ; C -> Color picker
 ;        ; T -> Text extractor
 ;        ; ; -> ZoomIt (remapped for win + shift + ;)
-
-/*
-    Utility -------------------------------------------------------------
-*/
-#+Up::PgUp
-#+Down::PgDn
-#+/::Send("{Media_Play_Pause}")
-#+,::Send("{Media_Prev}")
-#+.::Send("{Media_Next}")
 
 /*
     Diacritics ----------------------------------------------------------
@@ -46,5 +39,5 @@ diacritics := false
     :?*:ae::ä
     :?*:oe::ö
     :?*:ue::ü
-    :?*:dz::đ
+    :?*:dz::ð
 #Hotif
