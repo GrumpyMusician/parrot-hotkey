@@ -46,111 +46,145 @@ toggleDiacritics := false
     Morse Code ----------------------------------------------------------
 */
 
+
+/*
+    Morse Code ----------------------------------------------------------
+*/
+
 #MaxThreadsPerHotkey 4
+
 toggleMorse := false
-morse := MorseClass(78) 
+morse := MorseClass(78)
 
 #+Space::{
     global toggleMorse, morse
-    toggleMorse := !toggleMorse    
-    morseBuffer := ""
+    toggleMorse := !toggleMorse
+    morse.clearBuffers()
     SoundBeep
     if (toggleMorse) {
         ToolTip("Morse enabled")
     } else {
         ToolTip("Morse disabled")
-        morse.clearBuffers()
     }
     SetTimer(() => ToolTip(), -1000)
 }
 
-#Hotif toggleMorse
+#HotIf toggleMorse
     Space::{
         global morse
+        morse.cancelTimers()
         morse.setSpaceDnTime()
         morse.setFlag(true)
     }
     Space Up::{
+        global morse
         morse.setSpaceUpTime()
-        
-        if (morse.getSpaceUpTime() - morse.getSpaceDnTime() < morse.getUnitLength() * 3){ ; dot
+        if (morse.getSpaceUpTime() - morse.getSpaceDnTime()
+            < morse.getUnitLength() * 2) {
             morse.appendRawBuffer(".")
-        } else { ; dash
+        } else {
             morse.appendRawBuffer("-")
         }
-
-        morse.updateToolTip() 
         morse.setFlag(false)
-
-        Sleep(morse.getUnitLength() * 2) 
-        if (!morse.getFlag()){
-            morse.commitToBuffer()
-            Sleep(morse.getUnitLength() * 4)
-            if (!morse.getFlag()){
-                morse.commitToComputer()
-            }
-        }
-        morse.updateToolTip() 
-    } 
-#Hotif 
-
-class MorseClass { 
-    __New(unitLength){
-        this.morseMap := Map(".-", "a", "-...", "b", "-.-.", "c", "-..", "d", ".", "e", "..-.", "f", "--.", "g", "....", "h", "..", "i", ".---", "j", "-.-", "k", ".-..", "l", "--", "m", "-.", "n", "---", "o", ".--.", "p", "--.-", "q", ".-.", "r", "...", "s", "-", "t", "..-", "u", "...-", "v", ".--", "w", "-..-", "x", "-.--", "y", "--..", "z", "-----", 0, ".----", 1, "..---", 2, "...--", 3, "....-", 4, ".....", 5, "-....", 6, "--...", 7, "---..", 8, "----.", 9)
+        morse.updateToolTip()
+        morse.scheduleCharacter()
+    }
+#HotIf
+class MorseClass {
+    __New(unitLength) {
+        this.morseMap := Map(
+            ".-", "a", "-...", "b", "-.-.", "c",
+            "-..", "d", ".", "e", "..-.", "f",
+            "--.", "g", "....", "h", "..", "i",
+            ".---", "j", "-.-", "k", ".-..", "l",
+            "--", "m", "-.", "n", "---", "o",
+            ".--.", "p", "--.-", "q", ".-.", "r",
+            "...", "s", "-", "t", "..-", "u",
+            "...-", "v", ".--", "w", "-..-", "x",
+            "-.--", "y", "--..", "z",
+            "-----", "0", ".----", "1", "..---", "2",
+            "...--", "3", "....-", "4", ".....", "5",
+            "-....", "6", "--...", "7", "---..", "8",
+            "----.", "9"
+        )
         this.unitLength := unitLength
         this.spaceDnTime := 0
         this.spaceUpTime := 0
         this.rawBuffer := ""
         this.uncommittedBuffer := ""
         this.flag := false
+        this.charTimer := ObjBindMethod(this, "commitToBuffer")
+        this.wordTimer := ObjBindMethod(this, "commitToComputer")
     }
-    getFlag(){
+    getFlag() {
         return this.flag
     }
-    setFlag(newFlag := ""){
-        if (newFlag == ""){
+    setFlag(newFlag := "") {
+        if (newFlag == "") {
             this.flag := !this.flag
         } else {
             this.flag := newFlag
         }
     }
-    getUnitLength(){
+    getUnitLength() {
         return this.unitLength
     }
-    getSpaceDnTime(){
+    getSpaceDnTime() {
         return this.spaceDnTime
     }
-    setSpaceDnTime(){
+    setSpaceDnTime() {
         this.spaceDnTime := A_TickCount
     }
-    getSpaceUpTime(){
+    getSpaceUpTime() {
         return this.spaceUpTime
     }
-    setSpaceUpTime(){
-        this.spaceUpTime := A_TickCount 
+    setSpaceUpTime() {
+        this.spaceUpTime := A_TickCount
     }
-    getRawBuffer(){
+    getRawBuffer() {
         return this.rawBuffer
     }
-    appendRawBuffer(char){
-        this.rawBuffer := this.rawBuffer . char
+    appendRawBuffer(char) {
+        this.rawBuffer .= char
     }
-    clearBuffers(){
+    cancelTimers() {
+        SetTimer(this.charTimer, 0)
+        SetTimer(this.wordTimer, 0)
+    }
+    clearBuffers() {
+        this.cancelTimers()
         this.rawBuffer := ""
         this.uncommittedBuffer := ""
+        this.flag := false
+        this.updateToolTip()
+        SetTimer(() => ToolTip(), -500)
     }
-    commitToBuffer(){
-        if (this.morseMap.Has(this.rawBuffer)){
-            this.uncommittedBuffer := this.uncommittedBuffer . this.morseMap[this.rawBuffer]
+    scheduleCharacter() {
+        SetTimer(this.charTimer, -this.unitLength * 2)
+    }
+    commitToBuffer() {
+        if (this.flag)
+            return
+        if (this.morseMap.Has(this.rawBuffer)) {
+            this.uncommittedBuffer .= this.morseMap[this.rawBuffer]
         }
         this.rawBuffer := ""
+        this.updateToolTip()
+        if (this.uncommittedBuffer != "")
+            SetTimer(this.wordTimer, -this.unitLength * 4)
     }
-    commitToComputer(){
-        Send(this.uncommittedBuffer . " ")
-        this.uncommittedBuffer := ""
-        SetTimer(() => ToolTip(), -10)
+    commitToComputer() {
+        if (this.flag)
+            return
+        if (this.uncommittedBuffer != "") {
+            SendText(this.uncommittedBuffer . " ")
+            this.uncommittedBuffer := ""
+        }
+        this.updateToolTip()
+        SetTimer(() => ToolTip(), -500)
     }
-    updateToolTip(){
+
+    updateToolTip() {
         ToolTip(this.uncommittedBuffer . this.rawBuffer . "‸")
     }
 }
