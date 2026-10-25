@@ -273,3 +273,26 @@ class MorseClass {
         ToolTip(this.uncommittedBuffer . this.rawBuffer . "‸")
     }
 }
+
+/*
+    Block Keyboard ------------------------------------------------------
+*/
+
+Blocker := InputHook("L0 I")
+Blocker.KeyOpt("{All}", "S")
+Blocker.KeyOpt("{LWin}{RWin}{LShift}{RShift}` ", "-S")
+
+toggleBlock := false
+$#+`::{
+    global toggleBlock, Blocker
+    toggleBlock := !toggleBlock
+    SoundBeep(800)
+    if (toggleBlock) {
+        ToolTip("Blocking enabled") 
+        Blocker.Start()
+    } else {
+        ToolTip("Blocking disabled")
+        Blocker.Stop()
+    }
+    SetTimer(() => ToolTip(), -1000)
+}
