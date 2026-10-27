@@ -7,11 +7,12 @@
     Powertoys -----------------------------------------------------------
 */
 #+BackSpace::#^t ; Toggle always on top
-#+-::#^- ; Increase Opacity
-#+=::#^= ; Decrease Opacity
-;        ; C -> Color picker
-;        ; T -> Text extractor
-;        ; ' -> ZoomIt (remapped for win + shift + ')
+#+-::#^-  ; Increase Opacity
+#+=::#^=  ; Decrease Opacity
+#+d::#^+d ; Light/dark mode toggle
+;         ; C -> Color picker
+;         ; T -> Text extractor
+;         ; ' -> ZoomIt (remapped for win + shift + ')
 
 /*
     Diacritics ----------------------------------------------------------
