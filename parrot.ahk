@@ -14,6 +14,16 @@
 ;         ; T -> Text extractor
 ;         ; ' -> ZoomIt (remapped for win + shift + ')
 
+/* 
+    Notepad -------------------------------------------------------------
+*/
+#+v::{
+    Run("notepad.exe")
+    Sleep(1000)
+    Send("^v")
+    Send("#^t")
+}
+
 /*
     Diacritics ----------------------------------------------------------
 */
