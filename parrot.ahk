@@ -17,9 +17,14 @@
 /* 
     Notepad -------------------------------------------------------------
 */
+isFirstNotepad := true
 #+v::{
     Run("notepad.exe")
-    Sleep(1000)
+    if (isFirstNotepad){
+        Sleep(3000)
+    } else {
+        Sleep(1000)
+    }
     Send("^a")
     Send("^v")
     Send("#^t")
