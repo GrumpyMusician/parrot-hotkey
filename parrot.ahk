@@ -57,6 +57,7 @@ toggleDiacritics := false
     :?*:oe::ö
     :?*:ue::ü
     :?*:dz::ð
+    :?*:````::︎
 #Hotif
 
 /*
